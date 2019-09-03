@@ -1,22 +1,34 @@
 package com.sb.stu.spstu.controller;
 
+import com.sb.stu.spstu.domain.User;
+import com.sb.stu.spstu.mapper.UserMapper;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import javax.annotation.Resource;
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
 
-import javax.jws.WebParam;
 @Controller
 public class HelloController {
-    @RequestMapping("hello")
-    public  String hello(@RequestParam(name="username")String name, Model model){
-                model.addAttribute("name",name);
-                return "hello";
+    @RequestMapping("ts")
+    public  String hello1(){
+        return "test";
 
     }
+    @Resource
+   private  UserMapper userMapper;
     @RequestMapping("/")
-    public  String hello(){
+    //检验是否登陆过
+    public  String hello(HttpServletRequest request){
+        Cookie[] cookies=request.getCookies();
+        for(Cookie c:cookies){
+            if("token".equals(c.getName())){
+                String token=c.getValue();
+                User user= userMapper.findBytoken(token);
+                request.getSession().setAttribute("user",user);
+            }
+
+        }
         return "index";
 
     }
